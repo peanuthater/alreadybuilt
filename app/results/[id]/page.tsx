@@ -128,9 +128,11 @@ export default function ResultsPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Competitors with comparison */}
+      {/* Competitors */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Similar Products</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Similar Products
+        </h2>
         <div className="space-y-4">
           {result.competitors.map((competitor, i) => (
             <CompetitorCard key={i} competitor={competitor} />
@@ -138,7 +140,26 @@ export default function ResultsPage({ params }: { params: { id: string } }) {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Differentiation suggestions */}
+      {result.differentiation_angles.length > 0 && (
+        <section className="bg-indigo-50 rounded-xl border border-indigo-100 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            How to Differentiate
+          </h2>
+          <ul className="space-y-3">
+            {result.differentiation_angles.map((angle, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">
+                  {i + 1}
+                </span>
+                <p className="text-gray-800 leading-relaxed">{angle}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Footer actions */}
       <div className="flex items-center justify-between pt-2 border-t border-gray-200">
         <p className="text-xs text-gray-400">
           Analyzed on {new Date(result.timestamp).toLocaleString()}
