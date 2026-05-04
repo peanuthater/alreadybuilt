@@ -45,7 +45,36 @@ function CompetitorCard({ competitor }: { competitor: Competitor }) {
           Visit ↗
         </a>
       </div>
-      <p className="text-sm text-gray-600">{competitor.description}</p>
+      <p className="text-sm text-gray-600 mb-4">{competitor.description}</p>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            Similarities
+          </p>
+          <ul className="space-y-1.5">
+            {competitor.similarities.map((s, i) => (
+              <li key={i} className="flex items-start gap-1.5 text-sm text-gray-700">
+                <span className="text-amber-500 mt-0.5 shrink-0">•</span>
+                {s}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            Differences
+          </p>
+          <ul className="space-y-1.5">
+            {competitor.differences.map((d, i) => (
+              <li key={i} className="flex items-start gap-1.5 text-sm text-gray-700">
+                <span className="text-blue-500 mt-0.5 shrink-0">•</span>
+                {d}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
@@ -99,7 +128,7 @@ export default function ResultsPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Competitors */}
+      {/* Competitors with comparison */}
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Similar Products</h2>
         <div className="space-y-4">
