@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         max_tokens: 4096,
         system: SYSTEM_PROMPT,
         // web_search_20260209 is a server-side tool; cast to bypass SDK 0.40 type gap
-        tools: [{ type: 'web_search_20260209', name: 'web_search', allowed_callers: ['direct'] }] as Anthropic.ToolUnion[],
+        tools: [{ type: 'web_search_20260209', name: 'web_search', allowed_callers: ['direct'] }] as unknown as Anthropic.ToolUnion[],
         messages,
       });
 
