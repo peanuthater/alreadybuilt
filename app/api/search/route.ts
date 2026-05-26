@@ -128,16 +128,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const stripCites = (text: string) => text.replace(/<\/?cite[^>]*>/g, '').trim();
+
     const id = randomUUID();
 
     const result: SearchResult = {
       id,
       idea: idea.trim(),
       timestamp: new Date().toISOString(),
-      competitors: Array.isArray(parsed.competitors) ? parsed.competitors : [],
-      gap_analysis: typeof parsed.gap_analysis === 'string' ? parsed.gap_analysis : '',
+      competitors: Array.isArray(parsed.competitors)
+        ? parsed.competitors.map((c) => ({
+            ...c,
+            description: typeof c.description === 'string' ? stripCites(c.description) : c.description,
+          }))
+        : [],
+      gap_analysis: typeof parsed.gap_analysis === 'string' ? stripCites(parsed.gap_analysis) : '',
       differentiation_angles: Array.isArray(parsed.differentiation_angles)
-        ? parsed.differentiation_angles
+        ? parsed.differentiation_angles.map((a) =>
+            typeof a === 'string' ? stripCites(a) : a,
+          )
         : [],
       market_verdict:
         parsed.market_verdict === 'crowded' ||
