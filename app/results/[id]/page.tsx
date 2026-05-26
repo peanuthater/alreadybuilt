@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getSearch } from '@/lib/store';
-import type { Competitor } from '@/lib/types';
+import type { Competitor, SearchResult } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,10 +78,20 @@ function CompetitorCard({ competitor }: { competitor: Competitor }) {
   );
 }
 
-export default function ResultsPage({ params }: { params: { id: string } }) {
-  const result = getSearch(params.id);
+export default function ResultsPage({
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { data?: string };
+}) {
+  if (!searchParams.data) {
+    notFound();
+  }
 
-  if (!result) {
+  let result: SearchResult;
+  try {
+    result = JSON.parse(Buffer.from(searchParams.data, 'base64').toString('utf-8')) as SearchResult;
+  } catch {
     notFound();
   }
 

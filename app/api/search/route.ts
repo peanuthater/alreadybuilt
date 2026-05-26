@@ -1,7 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { addSearch } from '@/lib/store';
 import type { SearchResult } from '@/lib/types';
 
 const client = new Anthropic({
@@ -148,9 +147,9 @@ export async function POST(request: NextRequest) {
           : 'moderate',
     };
 
-    addSearch(result);
+    const encodedData = Buffer.from(JSON.stringify(result)).toString('base64');
 
-    return NextResponse.json({ id });
+    return NextResponse.json({ id, data: encodedData });
   } catch (err) {
     console.error('Search API error:', err);
     const message =

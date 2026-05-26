@@ -1,28 +1,31 @@
 import type { SearchResult } from './types';
 
-// Global singleton to survive Next.js hot reloads in development
-declare global {
-  // eslint-disable-next-line no-var
-  var _searchStore: SearchResult[] | undefined;
+const LS_KEY = 'peanuthater_searches';
+
+export interface StoredEntry {
+  result: SearchResult;
+  encodedData: string;
 }
 
-if (!global._searchStore) {
-  global._searchStore = [];
-}
-
-const store = global._searchStore;
-
-export function addSearch(result: SearchResult): void {
-  store.unshift(result);
-  if (store.length > 100) {
-    store.splice(100);
+export function saveSearchLocally(result: SearchResult, encodedData: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const existing = getLocalSearchEntries();
+    const updated = [
+      { result, encodedData },
+      ...existing.filter((e) => e.result.id !== result.id),
+    ].slice(0, 100);
+    localStorage.setItem(LS_KEY, JSON.stringify(updated));
+  } catch {
+    // localStorage may be unavailable (private browsing, storage full, etc.)
   }
 }
 
-export function getSearch(id: string): SearchResult | undefined {
-  return store.find((s) => s.id === id);
-}
-
-export function getAllSearches(): SearchResult[] {
-  return [...store];
+export function getLocalSearchEntries(): StoredEntry[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY) ?? '[]');
+  } catch {
+    return [];
+  }
 }

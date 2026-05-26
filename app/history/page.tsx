@@ -1,7 +1,9 @@
-import Link from 'next/link';
-import { getAllSearches } from '@/lib/store';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { getLocalSearchEntries } from '@/lib/store';
+import type { StoredEntry } from '@/lib/store';
 
 const verdictBadge = {
   crowded: 'bg-red-100 text-red-700',
@@ -16,7 +18,11 @@ const verdictLabel = {
 };
 
 export default function HistoryPage() {
-  const searches = getAllSearches();
+  const [entries, setEntries] = useState<StoredEntry[]>([]);
+
+  useEffect(() => {
+    setEntries(getLocalSearchEntries());
+  }, []);
 
   return (
     <div>
@@ -30,7 +36,7 @@ export default function HistoryPage() {
         </Link>
       </div>
 
-      {searches.length === 0 ? (
+      {entries.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
           <p className="text-gray-400 text-lg mb-4">No searches yet</p>
           <Link
@@ -42,29 +48,29 @@ export default function HistoryPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {searches.map((search) => (
+          {entries.map(({ result, encodedData }) => (
             <Link
-              key={search.id}
-              href={`/results/${search.id}`}
+              key={result.id}
+              href={`/results/${result.id}?data=${encodeURIComponent(encodedData)}`}
               className="block bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-indigo-200 transition-all"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-gray-900 font-medium leading-snug truncate">
-                    {search.idea}
+                    {result.idea}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {new Date(search.timestamp).toLocaleString()} ·{' '}
-                    {search.competitors.length} competitor
-                    {search.competitors.length !== 1 ? 's' : ''} found
+                    {new Date(result.timestamp).toLocaleString()} ·{' '}
+                    {result.competitors.length} competitor
+                    {result.competitors.length !== 1 ? 's' : ''} found
                   </p>
                 </div>
                 <span
                   className={`shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${
-                    verdictBadge[search.market_verdict] ?? verdictBadge.moderate
+                    verdictBadge[result.market_verdict] ?? verdictBadge.moderate
                   }`}
                 >
-                  {verdictLabel[search.market_verdict] ?? 'Moderate'}
+                  {verdictLabel[result.market_verdict] ?? 'Moderate'}
                 </span>
               </div>
             </Link>

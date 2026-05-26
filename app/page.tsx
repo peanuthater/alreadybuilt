@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { saveSearchLocally } from '@/lib/store';
+import type { SearchResult } from '@/lib/types';
 
 const MIN_LENGTH = 20;
 
@@ -34,7 +36,17 @@ export default function HomePage() {
         return;
       }
 
-      router.push(`/results/${data.id}`);
+      // Decode the base64 result and persist to localStorage for history
+      try {
+        const binString = atob(data.data);
+        const bytes = Uint8Array.from(binString, (c) => c.charCodeAt(0));
+        const result = JSON.parse(new TextDecoder().decode(bytes)) as SearchResult;
+        saveSearchLocally(result, data.data);
+      } catch {
+        // Non-critical: history won't include this entry if decode fails
+      }
+
+      router.push(`/results/${data.id}?data=${encodeURIComponent(data.data)}`);
     } catch {
       setError('Network error. Please check your connection and try again.');
     } finally {
